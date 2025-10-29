@@ -13,7 +13,7 @@ type Props = {
 export function Transaction({ id, text, amount }: Props) {
   const queryClient = useQueryClient();
 
-  const { mutate: deleteTransaction } = useMutation(
+  const { mutate: deleteTransaction, isPending } = useMutation(
     orpc.transaction.delete.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
@@ -29,8 +29,12 @@ export function Transaction({ id, text, amount }: Props) {
       <span className="hover:cursor-pointer">
         {amount < 0 ? "-" : "+"}${numberWithCommas(String(Math.abs(amount)))}
       </span>
-      <Button variant="destructive" onClick={() => deleteTransaction({ id })}>
-        X
+      <Button
+        variant="destructive"
+        disabled={isPending}
+        onClick={() => deleteTransaction({ id })}
+      >
+        {isPending ? "..." : "X"}
       </Button>
     </li>
   );
