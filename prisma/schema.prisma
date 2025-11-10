@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../prisma/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id       Int      @id @default(autoincrement())
+  text     String
+  amount   Float
+  createAt DateTime @default(now())
+
+  @@map("transaction")
+}

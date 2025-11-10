@@ -1,30 +1,23 @@
-version: '3.8'
+name: next-db
 
 services:
-  # Server API service
-  server:
-    build: .
-    container_name: expense_tracker_server
-    restart: always
-    ports:
-      - "3000:3000"
+  postgres:
+    image: postgres
+    container_name: next-db-postgres
     environment:
-      - DATABASE_URL=file:./dev.db
-      - CORS_ORIGIN=http://localhost:5173
-      - PORT=3000
+      POSTGRES_DB: next-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
     volumes:
-      - ./packages/db/prisma/dev.db:/app/packages/db/prisma/dev.db
-    command: npm run dev:server
+      - next-db_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
-  # Web frontend service
-  web:
-    build: .
-    container_name: expense_tracker_web
-    restart: always
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_SERVER_URL=http://server:3000
-    depends_on:
-      - server
-    command: npm run dev:web
+volumes:
+  next-db_postgres_data:
