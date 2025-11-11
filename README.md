@@ -1,26 +1,21 @@
-# 🧾 Expense Tracker Application
+# 🧾 Next Expense Tracker Application
 
-A modern, full-stack expense tracking application built with a monorepo architecture using cutting-edge technologies.
+A modern, full-stack expense tracking application built with Next.js 15, React 19, and Prisma.
 
 ## 🚀 Tech Stack
 
-### Frontend
+### Frontend & Backend
+- **[Next.js 16](https://nextjs.org/)** - React framework with hybrid static & server rendering
 - **[React 19](https://react.dev/)** - Latest React with hooks and concurrent features
-- **[Vite](https://vitejs.dev/)** - Ultra-fast build tool and development server
-- **[React Router v7](https://reactrouter.com/)** - Declarative routing for React
+- **[oRPC](https://orpc.dev/)** - Type-safe API framework
+- **[Zod](https://zod.dev/)** - TypeScript-first schema declaration and validation
 - **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[TanStack Query](https://tanstack.com/query)** - Server state management
 - **[React Hook Form](https://react-hook-form.com/)** - Performant, flexible forms with easy validation
 
-### Backend
-- **[Node.js](https://nodejs.org/)** - JavaScript runtime environment
-- **[Express.js v5](https://expressjs.com/)** - Fast, unopinionated web framework
-- **[oRPC](https://orpc.dev/)** - Type-safe API framework
-- **[Zod](https://zod.dev/)** - TypeScript-first schema declaration and validation
-
 ### Database & ORM
 - **[Prisma](https://www.prisma.io/)** - Next-generation ORM
-- **[SQLite](https://www.sqlite.org/)** - Lightweight database engine
+- **[PostgreSQL](https://www.postgresql.org/)** - Advanced open-source relational database
 
 ### Monorepo Tools
 - **[TurboRepo](https://turbo.build/)** - High-performance build system for JavaScript/TypeScript monorepos
@@ -29,20 +24,23 @@ A modern, full-stack expense tracking application built with a monorepo architec
 ## 📁 Project Structure
 
 ```
-├── 📁 apps/
-│   ├── 📁 server/          # Express.js backend with oRPC
-│   └── 📁 web/             # React frontend with Vite
-├── 📁 packages/
-│   ├── 📁 api/             # Shared API contracts and procedures
-│   └── 📁 db/              # Prisma database client and schema
-├── 📄 turbo.json           # Turborepo configuration
-├── 📄 package.json         # Root package.json with workspaces
+├── 📁 app/                 # Next.js app router directory
+├── 📁 components/          # Reusable UI components
+├── 📁 hooks/               # Custom React hooks
+├── 📁 lib/                 # Utility functions
+├── 📁 prisma/              # Prisma schema and migrations
+├── 📁 providers/           # React context providers
+├── 📁 public/              # Static assets
+├── 📁 server/              # Server-side logic and oRPC routers
+├── 📁 utils/               # Helper functions
+├── 📄 next.config.ts       # Next.js configuration
+├── 📄 package.json         # Project dependencies and scripts
 └── 📄 README.md            # This file
 ```
 
 ## 🛠️ Prerequisites
 
-- **Node.js** >= 18.x
+- **Node.js** >= 20.x
 - **npm** >= 8.x
 - **Docker** (optional, for containerized deployment)
 
@@ -53,7 +51,7 @@ A modern, full-stack expense tracking application built with a monorepo architec
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd react-context-node-payment
+cd next-expense-tracker
 
 # Install dependencies
 npm install
@@ -65,20 +63,19 @@ npm install
 # Generate Prisma client
 npm run db:generate
 
-# Push database schema
-npm run db:push
+# Run database migrations
+npm run db:migrate
 ```
 
 ### Development
 
 ```bash
-# Start both frontend and backend in development mode
+# Start the Next.js application in development mode
 npm run dev
-
-# Or start individual services
-npm run dev:server    # Start only the backend server
-npm run dev:web       # Start only the frontend application
 ```
+
+Your application will be available at:
+- **Application**: http://localhost:3000
 
 Your application will be available at:
 - **Frontend**: http://localhost:5173
@@ -89,34 +86,42 @@ Your application will be available at:
 ### Development with Docker
 
 ```bash
-# Build and start all services
-docker-compose up --build
-
-# Start services in detached mode
+# Start the database service
 docker-compose up -d
 
+# Start the full application stack in development mode
+docker-compose -f docker-compose.full.yml up --build
+
+# Start services in detached mode
+docker-compose -f docker-compose.full.yml up -d
+
 # Stop all services
-docker-compose down
+docker-compose -f docker-compose.full.yml down
 ```
 
-### Production Deployment
+### Using Docker for Database Only
 
 ```bash
-# Build and start production services
-docker-compose -f docker-compose.prod.yml up --build
+# Start only the PostgreSQL database
+docker-compose up -d
+
+# Then run the Next.js application locally
+npm run dev
 ```
 
 ## 📦 Available Scripts
 
 | Command | Description |
 |--------|-------------|
-| `npm run dev` | Start all services in development mode |
-| `npm run build` | Build all packages |
-| `npm run dev:server` | Start only the backend server |
-| `npm run dev:web` | Start only the frontend application |
+| `npm run dev` | Start Next.js application in development mode |
+| `npm run build` | Build the Next.js application |
+| `npm run start` | Start the production built application |
+| `npm run lint` | Check code with Biome |
+| `npm run format` | Format code with Biome |
 | `npm run db:generate` | Generate Prisma client |
-| `npm run db:push` | Push Prisma schema to database |
+| `npm run db:migrate` | Run database migrations |
 | `npm run db:studio` | Open Prisma Studio |
+| `npm run db:seed` | Seed the database |
 
 ## 🔧 Environment Variables
 
@@ -124,11 +129,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Database connection
-DATABASE_URL=file:./dev.db
-
-# Server configuration
-PORT=3000
-CORS_ORIGIN=http://localhost:5173
+DATABASE_URL=postgresql://postgres:password@localhost:5432/transaction-db?schema=public
 ```
 
 ## 🤝 Contributing
