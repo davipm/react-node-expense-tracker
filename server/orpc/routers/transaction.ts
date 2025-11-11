@@ -3,27 +3,40 @@ import { publicProcedure } from '@/server/orpc';
 import { prisma } from '@/server/prisma';
 
 export const transactionSchema = z.object({
-  text: z.string().min(1, 'Please add some text').trim(),
-  amount: z.number().refine((val) => val !== 0, 'Please add a positive or negative number'),
+  id: z.number().min(1),
+  text: z.string().min(1),
+  amount: z.number().min(1),
+  createAt: z.date(),
 });
 
 export const transactionRouter = {
-  getAll: publicProcedure.handler(async () => {
-    return prisma.transaction.findMany();
-  }),
+  getAll: publicProcedure
+    .route({ method: 'GET', path: '/transactions' })
+    .output(z.array(transactionSchema))
+    .handler(() => {
+      return prisma.transaction.findMany();
+    }),
 
-  create: publicProcedure.input(transactionSchema).handler(async ({ input }) => {
-    return prisma.transaction.create({
-      data: {
-        text: input.text,
-        amount: input.amount,
-      },
-    });
-  }),
+  create: publicProcedure
+    .route({ method: 'POST', path: '/transactions' })
+    .input(transactionSchema.omit({ id: true, createAt: true }))
+    .output(transactionSchema)
+    .handler(async ({ input }) => {
+      return prisma.transaction.create({
+        data: {
+          text: input.text,
+          amount: input.amount,
+        },
+      });
+    }),
 
-  delete: publicProcedure.input(z.object({ id: z.number() })).handler(async ({ input }) => {
-    return prisma.transaction.delete({
-      where: { id: input.id },
-    });
-  }),
+  delete: publicProcedure
+    .route({ method: 'DELETE', path: '/transactions/{id}' })
+    .input(z.object({ id: z.number() }))
+    .output(transactionSchema)
+    .handler(async ({ input }) => {
+      return prisma.transaction.delete({
+        where: { id: input.id },
+      });
+    }),
 };
