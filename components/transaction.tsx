@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { numberWithCommas } from '@/lib/utils';
 import { orpc } from '@/utils/orpc';
@@ -36,6 +37,7 @@ export function Transaction({ id, text, amount }: Props) {
         return { previousTransactions };
       },
       onError: (err, variables, context) => {
+        toast.error(`${err.message} form Transaction ${variables.id}`);
         queryClient.setQueriesData(
           { queryKey: orpc.transaction.key({ type: 'query' }) },
           context?.previousTransactions,

@@ -93,7 +93,11 @@ export function AddTransaction() {
           />
         </FieldGroup>
 
-        <Button type="submit" className="text-base hover:cursor-pointer">
+        <Button
+          type="submit"
+          className="text-base hover:cursor-pointer"
+          disabled={form.formState.isSubmitting || form.formState.isLoading}
+        >
           Add Transaction
         </Button>
       </form>
